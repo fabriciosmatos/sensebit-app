@@ -1,0 +1,18 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{ sensor.tipo }}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <div class="sensor-profile" text-center #profilePic [style.background-image]="'url(' + sensor.imagem + ')'">
+  </div>
+
+  <div class="sensor-detail" padding>
+    <h2>{{sensor.tipo}}</h2>
+    <!-- <p>{{item.about}}</p> -->
+  </div>
+</ion-content>
