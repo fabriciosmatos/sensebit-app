@@ -32,13 +32,13 @@ export class LoginPage {
     })
   }
 
-  // Attempt to login in through our User service
+  // Tentativa de login através do nosso serviço de usuário
   doLogin() {
     this.user.login(this.account).subscribe((resp) => {
       this.navCtrl.push(MainPage);
     }, (err) => {
       this.navCtrl.push(MainPage);
-      // Unable to log in
+      // Incapaz de entrar
       let toast = this.toastCtrl.create({
         message: this.loginErrorString,
         duration: 3000,
