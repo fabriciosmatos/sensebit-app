@@ -46,6 +46,15 @@
 
     </ion-list>
   </form>
+
+  <button ion-button full (click)="conectarBluetooth()">Full Button</button>
+
+  <ion-card *ngIf="texto">
+    <ion-card-content>
+      teste: {{ texto.userName }}
+    </ion-card-content>
+  </ion-card>
+
   <ion-card *ngIf="scannedCode">
     <ion-card-content>
       Resultado scan: {{ scannedCode }}

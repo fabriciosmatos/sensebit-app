@@ -11,11 +11,11 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner';
   templateUrl: 'sensor-create.html'
 })
 export class SensorCreatePage {
-  @ViewChild('fileInput') fileInput;
 
+  @ViewChild('fileInput') fileInput;
   isReadyToSave: boolean;
   scannedCode = null;
-  sensor: any;
+  bluetoothSensor: string = '{ "userName": "teste login", "passWord": "teste"}';
 
   form: FormGroup;
 
@@ -85,6 +85,10 @@ export class SensorCreatePage {
   done() {
     if (!this.form.valid) { return; }
     this.viewCtrl.dismiss(this.form.value);
+  }
+
+  conectarBluetooth(){
+    this.bluetoothSensor = JSON.parse(this.bluetoothSensor);  
   }
 
   scanCode(){
