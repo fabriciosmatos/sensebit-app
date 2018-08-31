@@ -4,6 +4,8 @@ import { Camera } from '@ionic-native/camera';
 // import { QRScanner, QRScannerStatus  } from '@ionic-native/qr-scanner';
 import { IonicPage, NavController, ViewController } from 'ionic-angular';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
+import { AlertController } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -15,7 +17,8 @@ export class SensorCreatePage {
   @ViewChild('fileInput') fileInput;
   isReadyToSave: boolean;
   scannedCode = null;
-  bluetoothSensor: string = '{ "userName": "teste login", "passWord": "teste"}';
+  unpairedDevices: any;
+  gettingDevices: Boolean;
 
   form: FormGroup;
 
@@ -23,7 +26,9 @@ export class SensorCreatePage {
                 , public viewCtrl: ViewController
                 , formBuilder: FormBuilder
                 , public camera: Camera
-                , public barcodeScanner: BarcodeScanner) {
+                , public barcodeScanner: BarcodeScanner
+                , private bluetoothSerial: BluetoothSerial
+                , private alertCtrl: AlertController) {
     this.form = formBuilder.group({
       imagem: [''],
       tipo: ['', Validators.required],
@@ -34,6 +39,8 @@ export class SensorCreatePage {
     this.form.valueChanges.subscribe((v) => {
       this.isReadyToSave = this.form.valid;
     });
+
+    bluetoothSerial.enable();
   }
 
   ionViewDidLoad() {
@@ -86,16 +93,57 @@ export class SensorCreatePage {
     if (!this.form.valid) { return; }
     this.viewCtrl.dismiss(this.form.value);
   }
-
-  conectarBluetooth(){
-    this.bluetoothSensor = JSON.parse(this.bluetoothSensor);  
-  }
+  
+  success = (data) => alert(data);
+  fail = (error) => alert(error);
 
   scanCode(){
     this.barcodeScanner.scan().then(barcodeData => {
       this.scannedCode = barcodeData.text;
+      this.startScanning('DESKTOP-IJ7FBK4');
      }).catch(err => {
          console.log('Error', err);
      });
+  }
+
+  startScanning( nomeBluetooth:string ) {
+    this.unpairedDevices = null;
+    this.gettingDevices = true;
+    this.bluetoothSerial.discoverUnpaired().then((success) => {
+      this.unpairedDevices = success;
+      this.gettingDevices = false;
+      success.forEach(element => {
+        // alert(element.name);
+        if(element.name == nomeBluetooth){
+          this.selectDevice(element.address);
+        }
+      });
+    },
+      (err) => {
+        console.log(err);
+      })
+  }
+
+  selectDevice(address: any) {
+    let alert = this.alertCtrl.create({
+      title: 'Conectar',
+      message: 'Você quer se conectar ao Sensor?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancelar',
+          handler: () => {
+            console.log('Cancelar clicado');
+          }
+        },
+        {
+          text: 'Conectar',
+          handler: () => {
+            this.bluetoothSerial.connect(address).subscribe(this.success, this.fail);
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 }

@@ -16,6 +16,7 @@ import { MyApp } from './app.component';
 import { QRScanner } from '@ionic-native/qr-scanner';
 import { NgxQRCodeModule } from 'ngx-qrcode2';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -69,6 +70,7 @@ export function provideSettings(storage: Storage) {
     SplashScreen,
     StatusBar,
     BarcodeScanner,
+    BluetoothSerial,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler }

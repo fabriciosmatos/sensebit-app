@@ -35,6 +35,8 @@
       </div>
     </div>
 
+    <ion-spinner name="crescent" *ngIf="gettingDevices"></ion-spinner>
+
     <ion-list>
       <ion-item>
         <ion-input type="text" placeholder="Identificador" formControlName="guid"></ion-input>
@@ -46,14 +48,6 @@
 
     </ion-list>
   </form>
-
-  <button ion-button full (click)="conectarBluetooth()">Full Button</button>
-
-  <ion-card *ngIf="texto">
-    <ion-card-content>
-      teste: {{ texto.userName }}
-    </ion-card-content>
-  </ion-card>
 
   <ion-card *ngIf="scannedCode">
     <ion-card-content>
