@@ -19,6 +19,8 @@ export class SensorCreatePage {
   scannedCode = null;
   unpairedDevices: any;
   gettingDevices: Boolean;
+  texto: string;
+  recebido: string;
 
   form: FormGroup;
 
@@ -40,7 +42,6 @@ export class SensorCreatePage {
       this.isReadyToSave = this.form.valid;
     });
 
-    bluetoothSerial.enable();
   }
 
   ionViewDidLoad() {
@@ -94,35 +95,18 @@ export class SensorCreatePage {
     this.viewCtrl.dismiss(this.form.value);
   }
   
-  success = (data) => alert(data);
-  fail = (error) => alert(error);
-
   scanCode(){
     this.barcodeScanner.scan().then(barcodeData => {
       this.scannedCode = barcodeData.text;
-      this.startScanning('DESKTOP-IJ7FBK4');
+      this.bluetoothSerial.enable();
+      this.selectDevice('90:32:4B:98:6F:70');
      }).catch(err => {
          console.log('Error', err);
      });
   }
-
-  startScanning( nomeBluetooth:string ) {
-    this.unpairedDevices = null;
-    this.gettingDevices = true;
-    this.bluetoothSerial.discoverUnpaired().then((success) => {
-      this.unpairedDevices = success;
-      this.gettingDevices = false;
-      success.forEach(element => {
-        // alert(element.name);
-        if(element.name == nomeBluetooth){
-          this.selectDevice(element.address);
-        }
-      });
-    },
-      (err) => {
-        console.log(err);
-      })
-  }
+  
+  fail = (error) => alert('falhou: '+error);
+  success = (data) => alert('sucesso: ' +data);
 
   selectDevice(address: any) {
     let alert = this.alertCtrl.create({
@@ -139,11 +123,44 @@ export class SensorCreatePage {
         {
           text: 'Conectar',
           handler: () => {
-            this.bluetoothSerial.connect(address).subscribe(this.success, this.fail);
+            this.bluetoothSerial.connect(address).subscribe(() => {
+              this.texto = 'wifi?';
+              this.send();
+            }, this.fail);
           }
         }
       ]
     });
     alert.present();
+  }
+
+  disconnect() {
+    let alert = this.alertCtrl.create({
+      title: 'Disconnect?',
+      message: 'Do you want to Disconnect?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Disconnect',
+          handler: () => {
+            this.bluetoothSerial.disconnect();
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  send() {
+    alert('Envia mensagem: '+this.texto);
+    this.bluetoothSerial.write(this.texto);
+    this.bluetoothSerial.read().then((data) => { this.recebido = data });
+    alert('Recebe dado: '+this.recebido);
   }
 }

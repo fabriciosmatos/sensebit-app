@@ -12,7 +12,7 @@ export class Sensores {
     "guid": "111",
     "status": "1",
     "usuarioId":"1",
-    "imagem":"../assets/img/speakers/sensor-energia.jpg" 
+    "imagem":"assets/img/sensor-energia.jpg" 
   };
 
 
@@ -24,7 +24,7 @@ export class Sensores {
         "guid": "111",
         "status": "1",
         "usuarioId":"1",
-        "imagem":"../assets/img/speakers/sensor-energia.jpg" 
+        "imagem":"assets/img/sensor-energia.jpg" 
       },
       {
         "sensorId": "1",
@@ -32,7 +32,7 @@ export class Sensores {
         "guid": "222",
         "status": "1",
         "usuarioId":"1",
-        "imagem":"../assets/img/speakers/sensor-movimento.jpg"
+        "imagem":"assets/img/sensor-movimento.jpg"
       },
       {
         "sensorId": "1",
@@ -40,7 +40,7 @@ export class Sensores {
         "guid": "333",
         "status": "1",
         "usuarioId":"1",
-        "imagem":"../assets/img/speakers/sensor-temperatura.jpg"
+        "imagem":"assets/img/sensor-temperatura.jpg"
       }
     ];
 
