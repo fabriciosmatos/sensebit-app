@@ -24,7 +24,8 @@
 
 
 <ion-content>
-  <form *ngIf="form" [formGroup]="form" (ngSubmit)="createSensor()">
+  <form *ngIf="form" [formGroup]="form" (ngSubmit)="apresentaListaWifi()">
+
     <input type="file" #fileInput style="visibility: hidden; height: 0px" name="files[]" (change)="processWebImage($event)" />
     <div class="profile-image-wrapper" (click)="scanCode()">
       <div class="profile-image-placeholder" *ngIf="!this.form.controls.imagem.value">
@@ -38,21 +39,22 @@
     <ion-spinner name="crescent" *ngIf="gettingDevices"></ion-spinner>
 
     <ion-list>
-      <ion-item>
-        <ion-input type="text" placeholder="Identificador" formControlName="guid"></ion-input>
-      </ion-item>
 
       <ion-item>
-        <ion-input type="text" placeholder="Tipo de Sensor" formControlName="tipo"></ion-input>
+          <ion-input type="text" placeholder="Identificador" ng-model="sensor.identificador"></ion-input>
       </ion-item>
 
-    </ion-list>
+      <div padding>
+        <button ion-button color="primary" block>Cadastrar</button>
+      </div>
+      
+    </ion-list>    
   </form>
 
-  <ion-card *ngIf="scannedCode">
+  <!-- <ion-card *ngIf="scannedCode">
     <ion-card-content>
       Resultado scan: {{ scannedCode }}
     </ion-card-content>
-  </ion-card>
+  </ion-card> -->
 
 </ion-content>

@@ -34,15 +34,15 @@ export class User {
     que o usuário inseriu no formulário.
    */
   login(accountInfo: any) {
-    let seq = this.api.post('login', accountInfo).share();
+    let seq = this.api.post('usuarios/login', accountInfo).share();
 
     seq.subscribe((res: any) => {
       // Se a API retornou uma resposta bem-sucedida, marque o usuário como logado
-      res.status = 'success';
       
-      if (res.status == 'success') {
+      if (!res.error) {
         this._loggedIn(res);
       } else {
+        alert('E-mail ou senha invalidos');
       }
     }, err => {
       console.error('ERROR', err);
