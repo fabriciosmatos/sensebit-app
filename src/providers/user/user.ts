@@ -37,17 +37,10 @@ export class User {
     let seq = this.api.post('usuarios/login', accountInfo).share();
 
     seq.subscribe((res: any) => {
-      // Se a API retornou uma resposta bem-sucedida, marque o usuário como logado
-      
-      if (!res.error) {
-        this._loggedIn(res);
-      } else {
-        alert('E-mail ou senha invalidos');
-      }
+      this._loggedIn(res);
     }, err => {
       console.error('ERROR', err);
     });
-
     return seq;
   }
 
@@ -59,10 +52,7 @@ export class User {
     let seq = this.api.post('usuarios', accountInfo).share();
 
     seq.subscribe((res: any) => {
-      // If the API returned a successful response, mark the user as logged in
-      if (res.status == 'success') {
-        this._loggedIn(res);
-      }
+      this._loggedIn(res);      
     }, err => {
       console.error('ERROR', err);
     });

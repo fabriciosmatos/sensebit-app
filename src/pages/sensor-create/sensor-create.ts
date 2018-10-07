@@ -20,10 +20,9 @@ export class SensorCreatePage {
   scannedCode = null;
   unpairedDevices: any;
   gettingDevices: Boolean = false;
-  texto: string;
-  recebido: string = "";
   eventoRecebe: Subscription;
-  recebidoDoSensor: string = ' { "wifi":[ {"nome":"Fabricio", "seguranca":"aberta", "sinal":-90 }, {"nome":"Mably", "seguranca":"fechada", "sinal":-70 }, {"nome":"Larissa", "seguranca":"texto_seguranca3", "sinal":-40 } ] } ';
+  recebido: string = "";
+  //recebidoDoSensor: string = ' { "wifi":[ {"nome":"Fabricio", "seguranca":"aberta", "sinal":-90 }, {"nome":"Mably", "seguranca":"fechada", "sinal":-70 }, {"nome":"Larissa", "seguranca":"texto_seguranca3", "sinal":-40 } ] } ';
   wifiList: object;
   form: FormGroup;
   timerRecebe: number = 0;
@@ -115,9 +114,9 @@ export class SensorCreatePage {
    */
   createSensor(){
     this.bluetoothSerial.enable();
-    // this.selectDevice(this.scannedCode);  # Atualizar para produção
-    this.conectaBluetooth('90:32:4B:98:6F:70');
-    // this.selectDevice('30:AE:A4:8D:96:E2');
+    this.conectaBluetooth(this.scannedCode);  // Atualizar para produção
+    // this.conectaBluetooth('90:32:4B:98:6F:70');
+    // this.conectaBluetooth('30:AE:A4:8D:96:E2');
   }
   
   fail = (error) => alert('falhou: '+error);
@@ -144,8 +143,9 @@ export class SensorCreatePage {
           text: 'Conectar',
           handler: () => {
             this.bluetoothSerial.connect(address).subscribe(() => {              
-              this.enviaMensagem('{"parametro":"wifi","operacao":"?"}',(data: string) => {
-                alert(data);
+              this.enviaMensagem('{"parametro": "wifi","operacao": "pergunta"}',(data: string) => {
+                alert('apresentaListaWifi');  // ################# DEBUG #################
+                this.apresentaListaWifi(data);
               });
             }, 
               this.fail);
@@ -187,10 +187,9 @@ export class SensorCreatePage {
    * @param texto é o que será enviado
    * @param funcao 
    */
-  enviaMensagem(texto:string, funcao:any) {        
-    let concatenaNome: string = "";
-    alert('Envia mensagem: '+this.texto);
-
+  enviaMensagem(texto:string, funcao:any) {
+    //alert('Envia mensagem: '+this.texto);
+    this.recebido = "";
     this.eventoRecebe = this.bluetoothSerial.subscribeRawData().subscribe((data) => { 
       this.bluetoothSerial.read().then((data) => {
         this.recebido += data;
@@ -199,20 +198,20 @@ export class SensorCreatePage {
           this.timerRecebe = 0;
         }
         this.timerRecebe = setTimeout(() => { 
+          alert(this.recebido);      // ################# DEBUG #################
           funcao(this.recebido);
           this.eventoRecebe.unsubscribe();
-        }, 200);  
+        }, 200);
       });
     });
-
-  
-    alert('OK');
-
-    this.bluetoothSerial.write(this.texto);
+    //alert('OK');
+    this.bluetoothSerial.write(texto);
   }
 
-  apresentaListaWifi() {
-    this.wifiList = JSON.parse(this.recebidoDoSensor);
+  apresentaListaWifi(recebido: string) {
+    alert(recebido);
+    let o_recebido: Object = JSON.parse(recebido);
+    this.wifiList = o_recebido['conteudo'];
     let potenciaSinal: string;
     let alerta = this.alertCtrl.create();
     alerta.setTitle('Lista de Wi-Fi disponiveis');
@@ -240,13 +239,13 @@ export class SensorCreatePage {
     alerta.addButton({
       text: 'OK',
       handler: data => {
-        this.showConfirm(data);
+        this.solicitaSenha(data);
       }
     });
     alerta.present();
   }
 
-  showConfirm(nomeWifi:string) {
+  solicitaSenha(nomeWifi:string) {
     const confirm = this.alertCtrl.create({
       title: 'Senha Wifi',
       message: 'Porgentileza informe a senha do Wi-Fi "' + nomeWifi + '"',
@@ -266,8 +265,10 @@ export class SensorCreatePage {
         },
         {
           text: 'Salvar',
-          handler: () => {
-            console.log('Agree clicked');
+          handler: data => {
+            this.enviaMensagem('{"parametro":"wifi","operacao":"definicao","conteudo":{"redes":[{"nome":"'+nomeWifi+'","senha":"'+data.senha+'"}]}}',(data: string) => {
+              alert(data);
+            });
           }
         }
       ]

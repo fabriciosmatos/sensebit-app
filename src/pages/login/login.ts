@@ -34,10 +34,11 @@ export class LoginPage {
 
   // Tentativa de login através do nosso serviço de usuário
   doLogin() {
+    console.log(this.account);
     this.user.login(this.account).subscribe((resp) => {
       this.navCtrl.push(MainPage);
     }, (err) => {
-      this.navCtrl.push(MainPage);
+      //this.navCtrl.push(MainPage);
       // Incapaz de entrar
       let toast = this.toastCtrl.create({
         message: this.loginErrorString,
