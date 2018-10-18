@@ -12,12 +12,14 @@ import { MainPage } from '../';
 })
 export class SignupPage {
 
-  account: { nome: string, 
+  account: { nome: string,
+              telefone: string, 
               login: string, 
               email: string,
-               password: string, 
-               emailVerified: boolean } = {
+              password: string, 
+              emailVerified: boolean } = {
     nome: 'Test Human',
+    telefone: '(11) 92222-2222',
     login: 'test.human',
     email: 'test@example.com',
     password: 'test',

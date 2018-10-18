@@ -1,7 +1,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>{{ 'LIST_MASTER_TITLE' | translate }}</ion-title>
+    <ion-title>Sensores</ion-title>
 
     <ion-buttons end>
       <button ion-button icon-only (click)="addSensor()">
@@ -15,11 +15,11 @@
 <ion-content>
     <ion-searchbar (ionInput)="getSensores($event)" placeholder='Procure um Sensor da lista, ex:"Sensor de Energia"'></ion-searchbar>
   <ion-list>
-    <button ion-item (click)="openSensor(item)" *ngFor="let sensor of currentSensores">
+    <button ion-item (click)="openSensor(sensor)" *ngFor="let sensor of currentSensores">
       <ion-avatar item-start>
         <img [src]="sensor.imagem" />
       </ion-avatar>
-      <h2>{{sensor.tipo}}</h2>
+      <h2>{{sensor.tipoNome}}</h2>
       <!-- <p>{{sensor.about}}</p> -->
       <!-- <ion-note item-end *ngIf="sensor.imagem">{{sensor.imagem}}</ion-note> -->
     </button>

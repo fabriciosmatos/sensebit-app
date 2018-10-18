@@ -1,8 +1,10 @@
+
 import 'rxjs/add/operator/toPromise';
 
 import { Injectable } from '@angular/core';
 
 import { Api } from '../api/api';
+import { StorageService } from '../storage/storageService';
 
 /**
  Most apps have the concept of a User. This is a simple provider
@@ -27,7 +29,7 @@ import { Api } from '../api/api';
 export class User {
   _user: any;
 
-  constructor(public api: Api) { }
+  constructor(public api: Api, private storage: StorageService) { }
 
   /**
    Envie uma solicitação POST para nosso endpoint de login com os dados 
@@ -65,12 +67,14 @@ export class User {
    */
   logout() {
     this._user = null;
+    this.storage.remove('usuario');
   }
 
   /**
    * Process a login/signup response to store user data
    */
   _loggedIn(resp) {
-    this._user = resp.user;
+    this._user = resp;
+    this.storage.add('usuario', this._user);
   }
 }

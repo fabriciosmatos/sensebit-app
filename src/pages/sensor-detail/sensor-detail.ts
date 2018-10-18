@@ -12,7 +12,9 @@ export class SensorDetailPage {
   sensor: any;
 
   constructor(public navCtrl: NavController, navParams: NavParams, sensores: Sensores) {
-    this.sensor = navParams.get('sensor') || sensores.defaultSensor;
+    this.sensor = navParams.get('sensor');
   }
+
+  
 
 }

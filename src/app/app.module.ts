@@ -10,13 +10,15 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
-import { Sensores } from '../mocks/providers/sensores';
-import { Settings, User, Api } from '../providers';
+// import { Sensores } from '../mocks/providers/sensores';
+import { Settings, User, Api, Sensores } from '../providers';
 import { MyApp } from './app.component';
 import { QRScanner } from '@ionic-native/qr-scanner';
 import { NgxQRCodeModule } from 'ngx-qrcode2';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
+import { Regras } from './../providers/regras/regras';
+import { StorageService } from './../providers/storage/storageService';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -64,6 +66,8 @@ export function provideSettings(storage: Storage) {
   providers: [
     Api,
     Sensores,
+    Regras,
+    StorageService,
     User,
     Camera,
     QRScanner,

@@ -45,7 +45,7 @@ export class Sensores {
     ];
 
     for (let sensor of sensores) {
-      this.sensores.push(new Sensor(sensor));
+      // this.sensores.push(new Sensor(sensor));
     }
   }
 

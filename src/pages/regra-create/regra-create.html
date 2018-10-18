@@ -1,0 +1,111 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Nova Regra</ion-title>
+    <ion-buttons start>
+      <button ion-button (click)="cancel()">
+        <span color="primary" showWhen="ios">
+          {{ 'CANCEL_BUTTON' | translate }}
+        </span>
+        <ion-icon name="md-close" showWhen="android,windows"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-buttons end>
+      <button ion-button (click)="done()" [disabled]="!isReadyToSave" strong>
+        <span color="primary" showWhen="ios">
+          {{ 'DONE_BUTTON' | translate }}
+        </span>
+        <ion-icon name="md-checkmark" showWhen="core,android,windows"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <form (ngSubmit)="createRegra()">
+
+    <ion-list class="formulario">
+
+      <ion-item>
+          <ion-input type="text" placeholder="Nome/Descricao" ng-model="regra.descricao"></ion-input>
+      </ion-item>
+      
+      <ion-item > 
+        <ion-label>&nbsp;&nbsp;Sensor</ion-label>
+        <ion-select>
+          <ion-option *ngFor="let sensor of currentSensor" [value]="sensor.id">{{sensor.tipoNome}}</ion-option>
+        </ion-select>
+      </ion-item>
+
+    <ion-row>
+        <ion-col col-9>
+          <ion-item > 
+            <ion-label>Valor Minímo</ion-label>
+            <ion-select ng-model="regra.operadorMinimo" >
+              <ion-option value="0">></ion-option>
+              <ion-option value="1">>=</ion-option>
+              <ion-option value="2">=</ion-option>
+              <ion-option value="3"><</ion-option>
+              <ion-option value="4" checked="true"><=</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+        <ion-col col-3>
+          <ion-item>
+            <ion-input type="number" placeholder="00" ng-model="regra.valorMinimo"></ion-input>
+          </ion-item>          
+        </ion-col>
+      </ion-row>
+
+      
+      <ion-row>
+        <ion-col col-9>
+          <ion-item > 
+            <ion-label>Valor Máximo</ion-label>
+            <ion-select ng-model="regra.operadorMaximo" >
+              <ion-option value="0">></ion-option>
+              <ion-option value="1">>=</ion-option>
+              <ion-option value="2">=</ion-option>
+              <ion-option value="3"><</ion-option>
+              <ion-option value="4" checked="true"><=</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+        <ion-col col-3>
+          <ion-item>
+            <ion-input type="number" placeholder="00" ng-model="regra.valorMaximo"></ion-input>
+          </ion-item> 
+        </ion-col>
+      </ion-row>
+
+
+      <ion-item > 
+        <ion-label>&nbsp;&nbsp;Período</ion-label>
+        <ion-select ng-model="regra.periodo">
+          <ion-option value="1">Diariamente</ion-option>
+          <ion-option value="2">Mensalmente</ion-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item > 
+        <ion-label>&nbsp;&nbsp;Ação</ion-label>
+        <ion-select ng-model="regra.acaoId">
+          <ion-option value="1">Mandar Email</ion-option>
+          <ion-option value="2">Mandar Notificação</ion-option>
+          <ion-option value="3">Desligar</ion-option>
+        </ion-select>
+      </ion-item>
+
+      <div padding>
+        <button ion-button color="primary" block>
+          <div *ngIf="!gettingDevices">Cadastrar</div>
+          <ion-spinner name="crescent" *ngIf="gettingDevices"></ion-spinner>
+        </button>
+      </div>
+      
+    </ion-list>    
+  </form>
+
+</ion-content>

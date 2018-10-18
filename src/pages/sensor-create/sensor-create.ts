@@ -5,8 +5,8 @@ import { IonicPage, NavController, ViewController } from 'ionic-angular';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
 import { AlertController } from 'ionic-angular';
-import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+import { Wifi } from '../../models/wifi';
 
 @IonicPage()
 @Component({
@@ -15,17 +15,17 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class SensorCreatePage {
 
-    @ViewChild('fileInput') fileInput;
+  @ViewChild('fileInput') fileInput;
   isReadyToSave: boolean;
-  scannedCode = null;
   unpairedDevices: any;
   gettingDevices: Boolean = false;
   eventoRecebe: Subscription;
   recebido: string = "";
-  //recebidoDoSensor: string = ' { "wifi":[ {"nome":"Fabricio", "seguranca":"aberta", "sinal":-90 }, {"nome":"Mably", "seguranca":"fechada", "sinal":-70 }, {"nome":"Larissa", "seguranca":"texto_seguranca3", "sinal":-40 } ] } ';
+  //recebidoDoSensor: string = '{"wifi":[ {"nome":"Fabricio", "seguranca":"aberta", "sinal":-90 }, {"nome":"Mably", "seguranca":"fechada", "sinal":-70 }, {"nome":"Larissa", "seguranca":"texto_seguranca3", "sinal":-40 } ] } ';
   wifiList: object;
   form: FormGroup;
   timerRecebe: number = 0;
+  currentWifis: Wifi[]= [];
 
   constructor(public navCtrl: NavController
                 , public viewCtrl: ViewController
@@ -40,7 +40,7 @@ export class SensorCreatePage {
       guid: ['']
     });
 
-    // Watch the form for changes, and
+    // Assista ao formulário para alterações e
     this.form.valueChanges.subscribe((v) => {
       this.isReadyToSave = this.form.valid;
     });
@@ -102,7 +102,8 @@ export class SensorCreatePage {
   scanCode(){
     this.gettingDevices = true; 
     this.barcodeScanner.scan().then(barcodeData => {
-      this.scannedCode = barcodeData.text;
+      this.bluetoothSerial.enable();
+      this.conectaBluetooth(barcodeData.text);
       this.gettingDevices = false;      
      }).catch(err => {
          console.log('Error', err);
@@ -113,10 +114,7 @@ export class SensorCreatePage {
    * Chama a função de conectar no sensor com o QRCODE
    */
   createSensor(){
-    this.bluetoothSerial.enable();
-    this.conectaBluetooth(this.scannedCode);  // Atualizar para produção
-    // this.conectaBluetooth('90:32:4B:98:6F:70');
-    // this.conectaBluetooth('30:AE:A4:8D:96:E2');
+
   }
   
   fail = (error) => alert('falhou: '+error);
@@ -145,7 +143,7 @@ export class SensorCreatePage {
             this.bluetoothSerial.connect(address).subscribe(() => {              
               this.enviaMensagem('{"parametro": "wifi","operacao": "pergunta"}',(data: string) => {
                 alert('apresentaListaWifi');  // ################# DEBUG #################
-                this.apresentaListaWifi(data);
+                this.currentWifis = this.toWifis(data);
               });
             }, 
               this.fail);
@@ -208,72 +206,36 @@ export class SensorCreatePage {
     this.bluetoothSerial.write(texto);
   }
 
-  apresentaListaWifi(recebido: string) {
-    alert(recebido);
-    let o_recebido: Object = JSON.parse(recebido);
-    this.wifiList = o_recebido['conteudo'];
-    let potenciaSinal: string;
-    let alerta = this.alertCtrl.create();
-    alerta.setTitle('Lista de Wi-Fi disponiveis');
-
-    for (let key in this.wifiList) {  
-      for (let i=0; i< this.wifiList[key].length ; i=i+1){
-        if(this.wifiList[key][i].sinal > -60){
-          potenciaSinal = ' (Forte)';
-        }else if (this.wifiList[key][i].sinal <= -60
-                    && this.wifiList[key][i].sinal > -85){
-          potenciaSinal = ' (Medio)';
-        }else if (this.wifiList[key][i].sinal <= -85){
-          potenciaSinal = ' (Fraco)';
-        }  
-
-        alerta.addInput({
-          type: 'radio',
-          label: this.wifiList[key][i].nome + potenciaSinal,
-          value: this.wifiList[key][i].nome,
-          checked: i==0?true:false
-        });
-      }    
-    }
-    alerta.addButton('Cancel');
-    alerta.addButton({
-      text: 'OK',
-      handler: data => {
-        this.solicitaSenha(data);
+  isEmpty(obj: object){
+    for (var i in obj) {
+      if(obj.hasOwnProperty(i)) {
+          return false;
       }
-    });
-    alerta.present();
+    }
+    return true;
   }
 
-  solicitaSenha(nomeWifi:string) {
-    const confirm = this.alertCtrl.create({
-      title: 'Senha Wifi',
-      message: 'Porgentileza informe a senha do Wi-Fi "' + nomeWifi + '"',
-      inputs: [
-        {
-          name: 'senha',
-          placeholder: 'senha'
-        },
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          handler: () => {
-            console.log('Disagree clicked');
-          }
-        },
-        {
-          text: 'Salvar',
-          handler: data => {
-            this.enviaMensagem('{"parametro":"wifi","operacao":"definicao","conteudo":{"redes":[{"nome":"'+nomeWifi+'","senha":"'+data.senha+'"}]}}',(data: string) => {
-              alert(data);
-            });
-          }
-        }
-      ]
-    });
-    confirm.present();
+  toWifis(data: string){
+    let jsonData = JSON.parse(data); 
+    let currentWifis: Wifi[] = [];
+    for (let key in jsonData) {  
+      for (let i=0; i< jsonData[key].length ; i=i+1){
+        let potenciaSinal: string = '';
+        if(jsonData[key][i].sinal > -60){
+          potenciaSinal = ' (Forte)';
+        }else if (jsonData[key][i].sinal <= -60
+                    && jsonData[key][i].sinal > -85){
+          potenciaSinal = ' (Medio)';
+        }else if (jsonData[key][i].sinal <= -85){
+          potenciaSinal = ' (Fraco)';
+        }  
+        let wifi: Wifi = new Wifi(jsonData[key][i].nome
+                                    ,jsonData[key][i].seguranca
+                                    , potenciaSinal);
+        currentWifis.push(wifi);
+      }
+    }
+    return currentWifis;
   }
 
 }

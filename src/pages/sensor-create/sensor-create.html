@@ -43,6 +43,17 @@
       <ion-item>
           <ion-input type="text" placeholder="Identificador" ng-model="sensor.identificador"></ion-input>
       </ion-item>
+      
+      <ion-item > 
+        <ion-label>&nbsp;&nbsp;Wifi</ion-label>
+        <ion-select  [disabled]="isEmpty(currentWifis)">
+          <ion-option *ngFor="let wifi of currentWifis" [value]="wifi.nome">{{wifi.nome + wifi.sinal}}</ion-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-input type="text" placeholder="Senha" ng-model="sensor.senha" [disabled]="isEmpty(currentWifis)"></ion-input>
+      </ion-item>
 
       <div padding>
         <button ion-button color="primary" block>Cadastrar</button>
@@ -50,11 +61,5 @@
       
     </ion-list>    
   </form>
-
-  <!-- <ion-card *ngIf="scannedCode">
-    <ion-card-content>
-      Resultado scan: {{ scannedCode }}
-    </ion-card-content>
-  </ion-card> -->
 
 </ion-content>

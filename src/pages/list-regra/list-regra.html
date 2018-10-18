@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Regras</ion-title>
+
+    <ion-buttons end>
+      <button ion-button icon-only (click)="addRegra()">
+        <ion-icon name="add"></ion-icon>
+      </button>   
+    </ion-buttons>
+  </ion-navbar>  
+</ion-header>
+
+<ion-content *ngIf="comunicaListaVazia">
+    <ion-searchbar (ionInput)="getSensores($event)" placeholder='Procure uma Regra da lista, ex:"Alerta X"'></ion-searchbar>
+  <ion-list>
+    <button ion-item (click)="openSensor(regra)" *ngFor="let regra of currentRegras">
+      <ion-icon name="alarm" item-start></ion-icon>
+      <h2>{{regra.descricao}}</h2>
+      <p>{{regra.sensor.tipoNome}}</p>
+    </button>
+  </ion-list>
+</ion-content>
+
+<ion-content *ngIf="!comunicaListaVazia">
+  <ion-card>
+    <ion-card-header>
+      <ion-icon name="warning" item-start></ion-icon>
+      Atenção
+    </ion-card-header>
+    <ion-card-content>
+      Você não possui nenhuma <b>regra</b> cadastrada, para cadastrar uma nova regra clique no botão de <b>+</b>.
+    </ion-card-content>  
+  </ion-card>
+</ion-content>

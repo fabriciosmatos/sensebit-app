@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 
 import { Sensor } from '../../models/sensor';
-import { Sensores } from './../../mocks/providers/sensores';
+import { Sensores } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -14,7 +14,9 @@ export class ListMasterPage {
   currentSensores: Sensor[];
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public sensores: Sensores, public modalCtrl: ModalController) {
-    this.currentSensores = this.sensores.query();
+    this.sensores.getAllSensores((resp) => {
+      this.currentSensores = resp;
+    });
   }
 
   /**
@@ -63,7 +65,7 @@ export class ListMasterPage {
       return;
     }
     this.currentSensores = this.sensores.query({
-      tipo: val
+      tipoNome: val
     });
   }
 
