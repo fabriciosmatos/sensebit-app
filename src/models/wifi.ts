@@ -1,14 +1,14 @@
 
 export class Wifi {
   nome: string;
-  seguranca: string;
+  senha: string;
   sinal: string;  
 
   constructor(nome: string
-              , seguranca: string
+              , senha: string
               , sinal: string) {
       this.nome = nome;
-      this.seguranca =seguranca;
+      this.senha =senha;
       this.sinal = sinal;      
   }
  

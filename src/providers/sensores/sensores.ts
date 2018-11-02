@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 
 import { Sensor } from '../../models/sensor';
 import { Api } from '../api/api';
-import { User } from '../user/user';
 import { StorageService } from './../storage/storageService';
 
 @Injectable()
@@ -10,7 +9,7 @@ export class Sensores {
   usuarioLogado: any;
   sensorList: Sensor[] = new Array<Sensor>();
 
-  constructor(public api: Api, public user: User, public storage: StorageService) {
+  constructor(public api: Api, public storage: StorageService) {
   }
 
   query(params?: any) {
@@ -32,7 +31,7 @@ export class Sensores {
   }
 
   getAllSensores(funcao: any){
-    let evento = this.storage.get('usuario').then(user => {
+    this.storage.get('usuario').then(user => {
       let seq = this.api.get('sensores', 
       {filter: '{"where":{"usuarioId":'+user.userId+'}}'}).share();
       seq.subscribe((res: any) => {
@@ -61,7 +60,10 @@ export class Sensores {
   }
 
   add(sensor: Sensor) {
-    return this.api.post('sensores', sensor);
+    sensor.status = 0;
+    let obj: {data: Sensor} = {data: sensor};
+    alert('sensor: ' + JSON.stringify(obj));
+    return this.api.post('sensores/registerSensor', obj);    
   }
 
   delete(sensor: Sensor) {

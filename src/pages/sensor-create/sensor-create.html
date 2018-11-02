@@ -24,11 +24,11 @@
 
 
 <ion-content>
-  <form *ngIf="form" [formGroup]="form" (ngSubmit)="createSensor()">
+  <form (ngSubmit)="createSensor()">
 
     <input type="file" #fileInput style="visibility: hidden; height: 0px" name="files[]" (change)="processWebImage($event)" />
     <div class="profile-image-wrapper" (click)="scanCode()">
-      <div class="profile-image-placeholder" *ngIf="!this.form.controls.imagem.value">
+      <div class="profile-image-placeholder">
         <ion-icon name="qr-scanner"></ion-icon>
         <div>
           Scan QR Code
@@ -41,18 +41,28 @@
     <ion-list>
 
       <ion-item>
-          <ion-input type="text" placeholder="Identificador" ng-model="sensor.identificador"></ion-input>
+          <ion-input type="text" placeholder="Nome" [(ngModel)]="sensor.nome" name="nome" required></ion-input>
       </ion-item>
+
+      <!-- <ion-item > 
+        <ion-label>&nbsp;&nbsp;Wifi</ion-label>
+        <ion-select [(ngModel)]="sensor.wifis[0].nome" name="wifiNome">
+          <ion-option value="1">Sensor de Energia</ion-option>
+          <ion-option value="2">{{wifi.nome + wifi.sinal}}</ion-option>
+          <ion-option value="3">{{wifi.nome + wifi.sinal}}</ion-option>
+          <ion-option value="4">{{wifi.nome + wifi.sinal}}</ion-option>
+        </ion-select>
+      </ion-item> -->
       
       <ion-item > 
         <ion-label>&nbsp;&nbsp;Wifi</ion-label>
-        <ion-select  [disabled]="isEmpty(currentWifis)">
+        <ion-select [(ngModel)]="sensor.wifis[0].nome" name="wifiNome">
           <ion-option *ngFor="let wifi of currentWifis" [value]="wifi.nome">{{wifi.nome + wifi.sinal}}</ion-option>
         </ion-select>
       </ion-item>
 
       <ion-item>
-        <ion-input type="text" placeholder="Senha" ng-model="sensor.senha" [disabled]="isEmpty(currentWifis)"></ion-input>
+        <ion-input type="text" placeholder="Senha" [(ngModel)]="sensor.wifis[0].senha" name="wifiSenha"></ion-input>
       </ion-item>
 
       <div padding>

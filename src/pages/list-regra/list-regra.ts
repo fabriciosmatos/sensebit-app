@@ -39,7 +39,8 @@ export class ListRegraPage {
     let addModal = this.modalCtrl.create('RegraCreatePage');
     addModal.onDidDismiss(regra => {
       if (regra) {
-        this.regras.add(regra);
+        this.currentRegras.push(regra);
+        this.comunicaListaVazia = true;
       }
     })
     addModal.present();
@@ -51,9 +52,9 @@ export class ListRegraPage {
   }
 
   openRegra(regra: Regra) {
-    this.navCtrl.push('RegraDetailPage', {
-      regra: regra
-    });
+    // this.navCtrl.push('RegraDetailPage', {
+    //   regra: regra
+    // });
   }
 
   getSensores(ev) {

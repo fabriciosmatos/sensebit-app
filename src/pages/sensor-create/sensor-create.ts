@@ -1,12 +1,16 @@
+
+import { StorageService } from './../../providers/storage/storageService';
 import { Component, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Camera } from '@ionic-native/camera';
-import { IonicPage, NavController, ViewController } from 'ionic-angular';
+import { IonicPage, NavController, ViewController, ToastController, LoadingController, DateTime } from 'ionic-angular';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
 import { AlertController } from 'ionic-angular';
 import { Subscription } from 'rxjs/Subscription';
 import { Wifi } from '../../models/wifi';
+import { Sensores } from './../../providers/sensores/sensores';
+import { Sensor } from './../../models/sensor';
+import { areIterablesEqual } from '@angular/core/src/change_detection/change_detection_util';
 
 @IonicPage()
 @Component({
@@ -23,26 +27,28 @@ export class SensorCreatePage {
   recebido: string = "";
   //recebidoDoSensor: string = '{"wifi":[ {"nome":"Fabricio", "seguranca":"aberta", "sinal":-90 }, {"nome":"Mably", "seguranca":"fechada", "sinal":-70 }, {"nome":"Larissa", "seguranca":"texto_seguranca3", "sinal":-40 } ] } ';
   wifiList: object;
-  form: FormGroup;
   timerRecebe: number = 0;
   currentWifis: Wifi[]= [];
+  sensor: Sensor = new Sensor();
+  loading: any = null;
+
 
   constructor(public navCtrl: NavController
                 , public viewCtrl: ViewController
-                , formBuilder: FormBuilder
                 , public camera: Camera
                 , public barcodeScanner: BarcodeScanner
                 , private bluetoothSerial: BluetoothSerial
-                , private alertCtrl: AlertController) {
-    this.form = formBuilder.group({
-      imagem: [''],
-      tipo: ['', Validators.required],
-      guid: ['']
+                , private alertCtrl: AlertController
+                , public sensores: Sensores
+                , public storage: StorageService
+                , public toastCtrl: ToastController
+                , public loadingCtrl: LoadingController) {
+    this.storage.get('usuario').then(user => {
+      this.sensor.usuarioId = user.userId;
     });
 
-    // Assista ao formulário para alterações e
-    this.form.valueChanges.subscribe((v) => {
-      this.isReadyToSave = this.form.valid;
+    this.loading = this.loadingCtrl.create({
+      content: 'Conectando ao sensor ...'
     });
   }
 
@@ -57,7 +63,7 @@ export class SensorCreatePage {
         targetWidth: 96,
         targetHeight: 96
       }).then((data) => {
-        this.form.patchValue({ 'imagem': 'data:image/jpg;base64,' + data });
+        // this.form.patchValue({ 'imagem': 'data:image/jpg;base64,' + data });
       }, (err) => {
         alert('Unable to take photo');
       })
@@ -71,14 +77,14 @@ export class SensorCreatePage {
     reader.onload = (readerEvent) => {
 
       let imageData = (readerEvent.target as any).result;
-      this.form.patchValue({ 'imagem': imageData });
+      // this.form.patchValue({ 'imagem': imageData });
     };
 
     reader.readAsDataURL(event.target.files[0]);
   }
 
   getProfileImageStyle() {
-    return 'url(' + this.form.controls['imagem'].value + ')'
+    // return 'url(' + this.form.controls['imagem'].value + ')'
   }
 
   /**
@@ -92,19 +98,18 @@ export class SensorCreatePage {
    * O usuário está pronto e quer criar o item, então devolva-o ao apresentador.
    */
   done() {
-    if (!this.form.valid) { return; }
-    this.viewCtrl.dismiss(this.form.value);
+    this.viewCtrl.dismiss();
   }
 
   /**
    * Le QRCODE
    */
   scanCode(){
-    this.gettingDevices = true; 
+    // this.gettingDevices = true; 
     this.barcodeScanner.scan().then(barcodeData => {
       this.bluetoothSerial.enable();
       this.conectaBluetooth(barcodeData.text);
-      this.gettingDevices = false;      
+      // this.gettingDevices = false;      
      }).catch(err => {
          console.log('Error', err);
      });
@@ -114,7 +119,33 @@ export class SensorCreatePage {
    * Chama a função de conectar no sensor com o QRCODE
    */
   createSensor(){
+    alert('passo0'); 
+    let obj: {parametro: string, operacao:string, conteudo:any };
 
+    this.sensores.add(this.sensor).subscribe((resp) => {
+      alert('passo1');                         // ################## DEBUG ##################
+      this.sensor.guid = resp['status']['guid'];
+      //this.viewCtrl.dismiss(this.sensor); 
+      alert('passo2');      
+      obj = {parametro:"configuracao",operacao:"definicao",conteudo: { guid: this.sensor.guid}}; 
+      this.enviaMensagem(JSON.stringify(obj)).then((resp) =>{
+          alert('passo3');                  //  ################## DEBUG ##################
+          obj = { parametro: "wifi", operacao: "definicao", conteudo: { redes: this.sensor.wifis }};
+          alert(JSON.stringify(obj));
+          this.enviaMensagem(JSON.stringify(obj)).then((resp) => {});
+            // alert('passo4');                      ################## DEBUG ##################
+            const toast = this.toastCtrl.create({
+              message: 'Sensor cadastrado com sucesso!',
+              duration: 3000
+            });
+            toast.present();
+            this.desconectaBluetooth();
+            this.viewCtrl.dismiss(this.sensor);
+          });
+      }, 
+      (err) => {
+        alert('erro: ' + err);
+      });
   }
   
   fail = (error) => alert('falhou: '+error);
@@ -140,13 +171,29 @@ export class SensorCreatePage {
         {
           text: 'Conectar',
           handler: () => {
-            this.bluetoothSerial.connect(address).subscribe(() => {              
-              this.enviaMensagem('{"parametro": "wifi","operacao": "pergunta"}',(data: string) => {
-                alert('apresentaListaWifi');  // ################# DEBUG #################
+            this.loading.present();
+            setTimeout(() => {
+              this.loading.dismiss();
+            }, 10000);
+            this.bluetoothSerial.connect(address).subscribe(() => {
+              this.enviaMensagem('{"parametro": "wifi","operacao": "pergunta"}').then((data : string) => {
+                alert('ok1');
                 this.currentWifis = this.toWifis(data);
+                alert('ok2');
+                // alert(JSON.stringify(this.currentWifis));
+
+                this.enviaMensagem('{"parametro": "configuracao","operacao": "pergunta"}').then((data : string) => {
+                  alert('ok3');
+                  let jsonData = JSON.parse(data);
+                  alert("resposta: "+ data);
+                  this.sensor.tipo = jsonData['conteudo']['tipo'];
+                  alert("tipo: " + this.sensor.tipo);
+                  this.defineImagem();
+                  this.loading.dismiss();
+                });
               });
             }, 
-              this.fail);
+            this.fail);
           }
         }
       ]
@@ -185,25 +232,19 @@ export class SensorCreatePage {
    * @param texto é o que será enviado
    * @param funcao 
    */
-  enviaMensagem(texto:string, funcao:any) {
-    //alert('Envia mensagem: '+this.texto);
-    this.recebido = "";
-    this.eventoRecebe = this.bluetoothSerial.subscribeRawData().subscribe((data) => { 
-      this.bluetoothSerial.read().then((data) => {
-        this.recebido += data;
-        if(this.timerRecebe != 0){
-          clearTimeout(this.timerRecebe);
-          this.timerRecebe = 0;
-        }
-        this.timerRecebe = setTimeout(() => { 
-          alert(this.recebido);      // ################# DEBUG #################
-          funcao(this.recebido);
-          this.eventoRecebe.unsubscribe();
-        }, 200);
-      });
+  enviaMensagem(texto:string) {
+    return new Promise((resolve, reject) => {
+      //let timeout = setTimeout(() => {
+        //reject('timeout ao receber inicio');
+      //},10000);
+      //this.bluetoothSerial.subscribe('\x02').subscribe((data : string) => {
+          //clearTimeout(timeout);
+          this.bluetoothSerial.subscribe('\x03').subscribe((data) => {
+            resolve(data.slice(1,-1));
+          });
+      //});
+      this.bluetoothSerial.write('\x02' + texto + '\x03');
     });
-    //alert('OK');
-    this.bluetoothSerial.write(texto);
   }
 
   isEmpty(obj: object){
@@ -217,25 +258,42 @@ export class SensorCreatePage {
 
   toWifis(data: string){
     let jsonData = JSON.parse(data); 
+    let conteudo = jsonData['conteudo'];
     let currentWifis: Wifi[] = [];
-    for (let key in jsonData) {  
-      for (let i=0; i< jsonData[key].length ; i=i+1){
+    for (let key in conteudo) {  
+      for (let i=0; i< conteudo[key].length ; i=i+1){
         let potenciaSinal: string = '';
-        if(jsonData[key][i].sinal > -60){
+        if(conteudo[key][i].sinal > -60){
           potenciaSinal = ' (Forte)';
-        }else if (jsonData[key][i].sinal <= -60
-                    && jsonData[key][i].sinal > -85){
+        }else if (conteudo[key][i].sinal <= -60
+                    && conteudo[key][i].sinal > -85){
           potenciaSinal = ' (Medio)';
-        }else if (jsonData[key][i].sinal <= -85){
+        }else if (conteudo[key][i].sinal <= -85){
           potenciaSinal = ' (Fraco)';
         }  
-        let wifi: Wifi = new Wifi(jsonData[key][i].nome
-                                    ,jsonData[key][i].seguranca
+        let wifi: Wifi = new Wifi(conteudo[key][i].nome
+                                    ,conteudo[key][i].senha
                                     , potenciaSinal);
         currentWifis.push(wifi);
       }
     }
     return currentWifis;
+  }
+
+  defineImagem(){
+    if(this.sensor.tipo == 1){
+      this. sensor.imagem = 'assets/img/sensor-energia.jpg';
+      this.sensor.tipoNome = 'Sensor de Energia';
+    }else if(this.sensor.tipo == 2){
+      this.sensor.imagem = 'assets/img/sensor-temperatura.jpg';
+      this.sensor.tipoNome = 'Sensor de Temperatura';
+    }else if(this.sensor.tipo == 3){
+      this.sensor.imagem = 'assets/img/sensor-pressao.jpg';
+      this.sensor.tipoNome = 'Sensor de Pressão';
+    }else if(this.sensor.tipo == 4){
+      this.sensor.imagem = 'assets/img/sensor-movimento.jpg';
+      this.sensor.tipoNome = 'Sensor de Movimento';
+    }
   }
 
 }

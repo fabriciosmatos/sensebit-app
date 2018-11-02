@@ -33,7 +33,7 @@ export class ListMasterPage {
     let addModal = this.modalCtrl.create('SensorCreatePage');
     addModal.onDidDismiss(sensor => {
       if (sensor) {
-        this.sensores.add(sensor);
+        this.currentSensores.push(sensor);
       }
     })
     addModal.present();

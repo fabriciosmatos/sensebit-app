@@ -1,3 +1,4 @@
+
 import { FormGroup} from '@angular/forms';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
@@ -5,6 +6,7 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
 import { Sensor } from './../../models/sensor';
 import { Regra } from './../../models/regra';
 import { Sensores } from './../../providers/sensores/sensores';
+import { Regras } from './../../providers/regras/regras';
 
 @IonicPage()
 @Component({
@@ -15,12 +17,13 @@ export class RegraCreatePage {
   isReadyToSave: boolean;
   form: FormGroup;
   currentSensor: Sensor[];
-  regra: Regra;
+  regra: Regra = new Regra();
 
   constructor(public navCtrl: NavController
                 , public navParams: NavParams
                 , public viewCtrl: ViewController
-                , public sensores: Sensores) {
+                , public sensores: Sensores
+                , public regras: Regras) {
     this.sensores.getAllSensores((resp) => {
       this.currentSensor = resp;
     });
@@ -46,8 +49,15 @@ export class RegraCreatePage {
    * O usuário está pronto e quer criar o item, então devolva-o ao apresentador.
    */
   done() {
-    if (!this.form.valid) { return; }
-    this.viewCtrl.dismiss(this.form.value);
+    this.navCtrl.pop();
   }
 
+  add() {
+    this.regra.sensorId = this.regra.sensor.id;
+    this.regras.add(this.regra).subscribe((resp) => {
+      this.viewCtrl.dismiss(this.regra);
+    }, (err) => {
+      console.log(err);
+    });
+  }
 }

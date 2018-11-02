@@ -77,4 +77,10 @@ export class User {
     this._user = resp;
     this.storage.add('usuario', this._user);
   }
+
+  buscaPorId(resp) {
+    this._user = resp;
+    this.api.put('usuarios',resp);
+    this.storage.add('usuario', this._user);
+  }
 }

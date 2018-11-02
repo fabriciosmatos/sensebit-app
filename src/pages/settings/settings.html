@@ -1,50 +1,45 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Perfil</ion-title>
+    <ion-title>Dados Pessoais</ion-title>
   </ion-navbar>
 
 </ion-header>
 
+
 <ion-content>
-
-  <form [formGroup]="form" *ngIf="settingsReady">
-
-    <ion-list *ngIf="page == 'main'">
-
-      <button ion-item [navPush]="subSettings" [navParams]="profileSettings">
-        Editar Perfil
-      </button>
+  <form (submit)="doSignup()">
+    <ion-list>
 
       <ion-item>
-        <ion-label>{{ 'SETTINGS_OPTION1' | translate }}</ion-label>
-        <ion-toggle formControlName="option1"></ion-toggle>
+        <ion-label fixed>Nome</ion-label>
+        <ion-input type="text" [(ngModel)]="account.nome" name="name"></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-label>{{ 'SETTINGS_OPTION2' | translate }}</ion-label>
-        <ion-input formControlName="option2"></ion-input>
+        <ion-label fixed>Telefone</ion-label>
+        <ion-input type="text"  [(ngModel)]="account.telefone" name="telefone"></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-label>{{ 'SETTINGS_OPTION3' | translate }}</ion-label>
-        <ion-select formControlName="option3">
-          <ion-option value="1" checked="true">1</ion-option>
-          <ion-option value="2">2</ion-option>
-          <ion-option value="3">3</ion-option>
-        </ion-select>
+        <ion-label fixed>Login</ion-label>
+        <ion-input type="text" [(ngModel)]="account.login" name="login"></ion-input>
       </ion-item>
 
-      
+      <ion-item>
+        <ion-label fixed>E-mail</ion-label>
+        <ion-input type="email" [(ngModel)]="account.email" name="email"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label fixed>Senha</ion-label>
+        <ion-input type="password" [(ngModel)]="account.password" name="password"></ion-input>
+      </ion-item>
+
+      <div padding>
+        <button ion-button color="primary" block>Salvar Alterações</button>
+      </div>
+
     </ion-list>
-
-    <ion-list *ngIf="page == 'profile'">
-      <ion-item>
-        <ion-label>{{ 'SETTINGS_OPTION4' | translate }}</ion-label>
-        <ion-input formControlName="option4"></ion-input>
-      </ion-item>
-    </ion-list>
-    
   </form>
-
 </ion-content>
