@@ -119,21 +119,18 @@ export class SensorCreatePage {
    * Chama a função de conectar no sensor com o QRCODE
    */
   createSensor(){
-    alert('passo0'); 
     let obj: {parametro: string, operacao:string, conteudo:any };
 
     this.sensores.add(this.sensor).subscribe((resp) => {
-      alert('passo1');                         // ################## DEBUG ##################
+
       this.sensor.guid = resp['status']['guid'];
       //this.viewCtrl.dismiss(this.sensor); 
-      alert('passo2');      
       obj = {parametro:"configuracao",operacao:"definicao",conteudo: { guid: this.sensor.guid}}; 
       this.enviaMensagem(JSON.stringify(obj)).then((resp) =>{
-          alert('passo3');                  //  ################## DEBUG ##################
+
           obj = { parametro: "wifi", operacao: "definicao", conteudo: { redes: this.sensor.wifis }};
-          alert(JSON.stringify(obj));
           this.enviaMensagem(JSON.stringify(obj)).then((resp) => {});
-            // alert('passo4');                      ################## DEBUG ##################
+
             const toast = this.toastCtrl.create({
               message: 'Sensor cadastrado com sucesso!',
               duration: 3000
@@ -177,17 +174,15 @@ export class SensorCreatePage {
             }, 10000);
             this.bluetoothSerial.connect(address).subscribe(() => {
               this.enviaMensagem('{"parametro": "wifi","operacao": "pergunta"}').then((data : string) => {
-                alert('ok1');
+
                 this.currentWifis = this.toWifis(data);
-                alert('ok2');
-                // alert(JSON.stringify(this.currentWifis));
 
                 this.enviaMensagem('{"parametro": "configuracao","operacao": "pergunta"}').then((data : string) => {
-                  alert('ok3');
+
                   let jsonData = JSON.parse(data);
-                  alert("resposta: "+ data);
+
                   this.sensor.tipo = jsonData['conteudo']['tipo'];
-                  alert("tipo: " + this.sensor.tipo);
+
                   this.defineImagem();
                   this.loading.dismiss();
                 });

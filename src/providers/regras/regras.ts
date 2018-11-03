@@ -34,16 +34,19 @@ export class Regras {
   }
 
   getAllRegras(funcao: any, sensores: any){
-    this.regraList.length = 0;
+    let novaRegraList: Regra[] = new Array<Regra>();
+    //this.regraList.length = 0;
     sensores.forEach(sensor => {
       let seq = this.api.get('parametros', 
       {filter: '{"where":{"sensorId":'+sensor.id+'}}'}).share();
       seq.subscribe((res: any) => {
         res.forEach(regra => {
           regra.sensor = sensor;
-          this.regraList.push(regra);
+          //this.regraList.push(regra);
+          novaRegraList.push(regra);
         });
-        funcao(this.regraList);
+        //funcao(this.regraList);
+        funcao(novaRegraList);
       }, err => {
         console.error('ERROR_REGRA', err);
       });

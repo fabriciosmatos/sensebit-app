@@ -8,21 +8,31 @@
 
 
 <ion-content>
-  <div class="sensor-profile" text-center #profilePic [style.background-image]="'url(' + sensor.imagem + ')'">
-  </div>
-
-  <div class="sensor-detail" padding>
-    <h2>{{sensor.nome}}</h2>
-    <!-- <p>{{item.about}}</p> -->
-  </div>
-
-  <ion-card >
-      <ion-item>
-          <ion-icon name="speedometer" item-start large></ion-icon>
-          <h2>Leitura atual</h2>
-          <p>13W</p>
-        </ion-item>
+  <!-- <div class="sensor-profile" text-center #profilePic [style.background-image]="'url(' + sensor.imagem + ')'">
+  </div> -->  
+  <ion-card>
+    <ion-card-header>
+      <ion-icon name="speedometer" item-start large></ion-icon>
+      <b>Log do Sensor {{sensor.nome}}</b>
+    </ion-card-header>
+    <ion-list >
+      <ion-item> 
+        <b item-start>
+          Data / Hora
+        </b>
+        <b item-end>
+          {{sensor.unidade}}
+        </b>
+      </ion-item>
+      <ion-item *ngFor="let logSensor of currentLogSensor"> 
+        <div item-start>
+          {{logSensor.data | date: 'dd/MM/yyyy hh:mm:ss'}}
+        </div>
+        <div item-end>
+          {{logSensor.valor | number:'1.3-3'}}
+        </div>
+      </ion-item>
+    </ion-list>
   </ion-card>
-
 
 </ion-content>

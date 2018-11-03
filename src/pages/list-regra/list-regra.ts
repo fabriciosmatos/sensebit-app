@@ -21,6 +21,14 @@ export class ListRegraPage {
                 public regras: Regras, 
                 public sensores: Sensores, 
                 public modalCtrl: ModalController) {
+    //this.carregaRegras();
+  }
+
+  ionViewWillEnter(){
+    this.carregaRegras();
+  }
+
+  carregaRegras(){
     this.sensores.getAllSensores((resp) => {
       this.regras.getAllRegras((resp2) => {        
         if(resp2.length>0){
@@ -29,10 +37,6 @@ export class ListRegraPage {
         }
       },resp);          
     });
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad SrcPagesAlertasPage');
   }
 
   addRegra() {

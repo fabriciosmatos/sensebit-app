@@ -11,37 +11,29 @@ export class Sensor {
   id: number;
   sensorId: number;
   imagem: string;
+  unidade: string;
   wifis: Wifi[] = [new Wifi('','','')]; 
 
   constructor(){}
 
-  // constructor(tipo: number
-  //             , nome: string
-  //             , guid: string
-  //             , status: number
-  //             , usuarioId: number
-  //             , id: number
-  //             , sensorId: number) {
-  //   this.tipo = tipo;
-  //   this.nome = nome;
-  //   this.guid = guid;
-  //   this.status = status;
-  //   this.usuarioId = usuarioId;
-  //   this.id = id;
-  //   this.sensorId = sensorId;
-  //   if(tipo == 1){
-  //     this.imagem = 'assets/img/sensor-energia.jpg';
-  //     this.tipoNome = 'Sensor de Energia';
-  //   }else if(tipo == 2){
-  //     this.imagem = 'assets/img/sensor-temperatura.jpg';
-  //     this.tipoNome = 'Sensor de Temperatura';
-  //   }else if(tipo == 4){
-  //     this.imagem = 'assets/img/sensor-movimento.jpg';
-  //     this.tipoNome = 'Sensor de Movimento';
-  //   }
-  // }
+  static preencheAtributos(sensor: Sensor){
+    if(sensor.tipo == 1){
+      sensor.imagem = 'assets/img/sensor-energia.jpg';
+      sensor.tipoNome = 'Sensor de Energia';
+      sensor.unidade = 'Wh';
+    }else if(sensor.tipo == 2){
+      sensor.imagem = 'assets/img/sensor-temperatura.jpg';
+      sensor.tipoNome = 'Sensor de Temperatura';
+      sensor.unidade = '°C';
+    }else if(sensor.tipo == 3){
+      sensor.imagem = 'assets/img/sensor-pressao.jpg';
+      sensor.tipoNome = 'Sensor de Pressão';
+      sensor.unidade = 'hPa';
+    }else if(sensor.tipo == 4){
+      sensor.imagem = 'assets/img/sensor-movimento.jpg';
+      sensor.tipoNome = 'Sensor de Movimento';
+      sensor.unidade = '';
+    }
+    return sensor;
+  }
 }
-
-// export interface Sensor {
-//   [prop: string]: any;
-// }

@@ -11,4 +11,11 @@ page-sensor-detail {
     background: white;
     //position: absolute;
   }
+
+  .card-header {
+    color: map-get($colors, primary);
+    font-size: 1.5em;
+  }
 }
+
+
