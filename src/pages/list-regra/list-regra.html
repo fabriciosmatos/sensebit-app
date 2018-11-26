@@ -11,9 +11,9 @@
 </ion-header>
 
 <ion-content *ngIf="comunicaListaVazia">
-    <ion-searchbar (ionInput)="getSensores($event)" placeholder='Procure uma Regra da lista, ex:"Alerta X"'></ion-searchbar>
+  <ion-searchbar (ionInput)="getSensores($event)" placeholder='Procure uma Regra da lista, ex:"Alerta X"'></ion-searchbar>
   <ion-list>
-    <button ion-item *ngFor="let regra of currentRegras">
+    <button ion-item (click)="openRegra(regra)" *ngFor="let regra of currentRegras">
       <ion-icon name="alarm" item-start></ion-icon>
       <h2>{{regra.descricao}}</h2>
       <p>{{regra.sensor.tipoNome}}</p>

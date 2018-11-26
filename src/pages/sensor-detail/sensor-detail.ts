@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams} from 'ionic-angular';
 
 import { LogSensor } from './../../models/logSensor';
-import { Sensores } from '../../providers';
+import { Sensores } from './../../providers/sensores/sensores';
 
 @IonicPage()
 @Component({
@@ -15,7 +15,7 @@ export class SensorDetailPage {
   currentLogSensor: LogSensor[];
   timerAtualiza: number = 0;
 
-  constructor(public navCtrl: NavController, navParams: NavParams, sensores: Sensores) {
+  constructor(public navCtrl: NavController, navParams: NavParams, public sensores: Sensores) {
     this.sensor = navParams.get('sensor');
     sensores.getLastLogs(this.sensor, (resp)=>{
       this.currentLogSensor = resp;
@@ -29,5 +29,9 @@ export class SensorDetailPage {
 
   ionViewWillLeave(){
     clearInterval(this.timerAtualiza);
+  }
+
+  resetSensor(){
+    this.sensores.resetSensor(this.sensor);
   }
 }

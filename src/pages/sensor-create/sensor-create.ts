@@ -44,7 +44,7 @@ export class SensorCreatePage {
                 , public toastCtrl: ToastController
                 , public loadingCtrl: LoadingController) {
     this.storage.get('usuario').then(user => {
-      this.sensor.usuarioId = user.userId;
+      this.sensor.usuarioId = user.id;
     });
 
     this.loading = this.loadingCtrl.create({

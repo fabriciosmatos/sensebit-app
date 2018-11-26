@@ -75,12 +75,13 @@ export class User {
    */
   _loggedIn(resp) {
     this._user = resp;
-    this.storage.add('usuario', this._user);
+    this.api.get('usuarios/'+this._user.userId).share().subscribe(res=>{
+      this.storage.add('usuario', res);
+    });    
   }
 
   buscaPorId(resp) {
     this._user = resp;
-    this.api.put('usuarios',resp);
     this.storage.add('usuario', this._user);
   }
 }

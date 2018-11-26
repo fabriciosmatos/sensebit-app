@@ -36,7 +36,7 @@ export class Sensores {
   getAllSensores(funcao: any){
     this.storage.get('usuario').then(user => {
       let seq = this.api.get('sensores', 
-      {filter: '{"where":{"usuarioId":'+user.userId+'}}'}).share();
+      {filter: '{"where":{"usuarioId":'+user.id+'}}'}).share();
       seq.subscribe((res: any) => {
         let novoSensorList: Sensor[] = new Array<Sensor>();
         res.forEach(sensor => {
@@ -54,6 +54,7 @@ export class Sensores {
   add(sensor: Sensor) {
     sensor.status = 0;
     let obj: {data: Sensor} = {data: sensor};
+    alert(JSON.stringify(obj));
     return this.api.post('sensores/registerSensor', obj);    
   }
 
@@ -61,13 +62,30 @@ export class Sensores {
   }
 
   getLastLogs(sensor: Sensor, funcao: any){
+    let novoLogSensorList: LogSensor[] = new Array<LogSensor>(); ;
     let seq = this.api.get('logsensores/getlastlogs', {guid: sensor.guid}).share();
     this.sensorList.length = 0;
     seq.subscribe((res: any)=>{
       res['data'].forEach(logSensor => {
-        this.logSensorList.push(logSensor);
+        novoLogSensorList.push(logSensor);
       });
+      this.logSensorList = novoLogSensorList;
       funcao(this.logSensorList);
+    });
+  }
+
+  resetSensor(sensor: Sensor){
+    //alert(JSON.stringify(sensor));
+    return this.api.post('sensores/registerSensor', sensor); 
+  }
+
+  buscaPorId(id: number, funcao: any){
+    let seq = this.api.get('sensores', 
+      {filter: '{"where":{"id":'+id+'}}'}).share();
+    seq.subscribe((res: any) => {
+      funcao(res);
+    }, err => {
+      console.error('ERROR_REGRA', err);
     });
   }
 

@@ -40,7 +40,7 @@ export class SettingsPage {
 
     this.storage.get('usuario').then(user => {
       console.log(user);
-      this.account.id = user.userId;
+      this.account.id = user.id;
       this.account.nome = user.nome;
       this.account.telefone = user.telefone;
       this.account.login = user.login;

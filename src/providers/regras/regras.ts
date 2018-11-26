@@ -35,18 +35,16 @@ export class Regras {
 
   getAllRegras(funcao: any, sensores: any){
     let novaRegraList: Regra[] = new Array<Regra>();
-    //this.regraList.length = 0;
     sensores.forEach(sensor => {
       let seq = this.api.get('parametros', 
       {filter: '{"where":{"sensorId":'+sensor.id+'}}'}).share();
       seq.subscribe((res: any) => {
         res.forEach(regra => {
           regra.sensor = sensor;
-          //this.regraList.push(regra);
           novaRegraList.push(regra);
         });
-        //funcao(this.regraList);
-        funcao(novaRegraList);
+        this.regraList = novaRegraList;
+        funcao(this.regraList);
       }, err => {
         console.error('ERROR_REGRA', err);
       });
@@ -55,6 +53,10 @@ export class Regras {
 
   add(regra: Regra) {
     return this.api.post('parametros', regra);
+  }
+
+  update(regra: Regra) {
+    return this.api.put('parametros', regra);
   }
 
   delete(regra: Regra) {

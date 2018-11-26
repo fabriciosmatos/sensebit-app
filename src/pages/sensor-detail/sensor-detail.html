@@ -1,7 +1,15 @@
 <ion-header>
 
   <ion-navbar>
+    
     <ion-title>{{ sensor.tipoNome }}</ion-title>
+
+    <ion-buttons end>
+      <button ion-button icon-only (click)="resetSensor()">
+        <ion-icon name="refresh"></ion-icon>
+      </button>   
+    </ion-buttons>
+
   </ion-navbar>
 
 </ion-header>

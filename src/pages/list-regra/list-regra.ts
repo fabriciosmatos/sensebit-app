@@ -56,9 +56,9 @@ export class ListRegraPage {
   }
 
   openRegra(regra: Regra) {
-    // this.navCtrl.push('RegraDetailPage', {
-    //   regra: regra
-    // });
+    this.navCtrl.push('RegraDetailPage', {
+      regra: regra
+    });
   }
 
   getSensores(ev) {
